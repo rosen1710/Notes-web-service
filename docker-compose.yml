@@ -1,13 +1,23 @@
 version: '3.2'
 services:
+  proxysql:
+   image: proxysql/proxysql:2.6.3
+   ports:
+    - "6032:6032"
+    - "6070:6070"
+    - "6080:6080"
+
   database-1:
     image: mariadb:11.4.2
     env_file:
       - database.env
     ports:
       - "3307:3306"
+    depends_on:
+      - proxysql
     volumes:
       - database-1-data:/var/lib/mysql
+      - database-1-galera.cnf:/etc/mysql/conf.d
 
   database-2:
     image: mariadb:11.4.2
@@ -15,8 +25,11 @@ services:
       - database.env
     ports:
       - "3308:3306"
+    depends_on:
+      - proxysql
     volumes:
       - database-2-data:/var/lib/mysql
+      - database-2-galera.cnf:/etc/mysql/conf.d
 
   db-loadbalancer:
     image: mariadb/maxscale:24.02.1
@@ -52,4 +65,6 @@ services:
 
 volumes: # named volumes can be managed easier using docker-compose
   database-1-data:
+  database-1-galera.cnf:
   database-2-data:
+  database-2-galera.cnf:
