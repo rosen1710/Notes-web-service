@@ -1,20 +1,11 @@
 version: '3.2'
 services:
-  proxysql:
-   image: proxysql/proxysql:2.6.3
-   ports:
-    - "6032:6032"
-    - "6070:6070"
-    - "6080:6080"
-
   database-1:
     image: mariadb:11.4.2
     env_file:
       - database.env
     ports:
       - "3307:3306"
-    depends_on:
-      - proxysql
     volumes:
       - database-1-data:/var/lib/mysql
       - database-1-galera.cnf:/etc/mysql/conf.d
@@ -26,7 +17,7 @@ services:
     ports:
       - "3308:3306"
     depends_on:
-      - proxysql
+      - database-1
     volumes:
       - database-2-data:/var/lib/mysql
       - database-2-galera.cnf:/etc/mysql/conf.d
@@ -54,6 +45,7 @@ services:
       - "5000:5000"
     depends_on:
       - keycloak
+      - db-loadbalancer
 
   react-app:
     build: ./frontend
@@ -62,6 +54,7 @@ services:
       - "80:3000"
     depends_on:
       - keycloak
+      - python-app
 
 volumes: # named volumes can be managed easier using docker-compose
   database-1-data:
