@@ -9,6 +9,7 @@ COPY package.json .
  
 # Install application dependencies.
 RUN npm install
+RUN npm install -g serve
  
 # Copy the rest of the application files.
 COPY . .
@@ -17,4 +18,4 @@ COPY . .
 EXPOSE 3000
  
 # Run the application.
-CMD ["npm", "start"]
+# CMD ["npm", "start"]

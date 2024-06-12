@@ -46,15 +46,34 @@ services:
     depends_on:
       - keycloak
       - db-loadbalancer
+    command: flask run --host 0.0.0.0
 
   react-app:
     build: ./frontend
     ports:
-      - "3000:3000"
       - "80:3000"
     depends_on:
       - keycloak
       - python-app
+    command: serve -s build
+
+  python-app-dev:
+    build: ./backend
+    ports:
+      - "5001:5002"
+    depends_on:
+      - keycloak
+      - db-loadbalancer
+    command: python app.py
+
+  react-app-dev:
+    build: ./frontend
+    ports:
+      - "3000:3000"
+    depends_on:
+      - keycloak
+      - python-app-dev
+    command: npm start
 
 volumes: # named volumes can be managed easier using docker-compose
   database-1-data:
